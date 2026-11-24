@@ -32,7 +32,7 @@
     {% for result in results %}
     <article class="card mb-3">
         <div class="card-header">
-            <strong>{{ forloop.counter }}. {{ result.question.content }}</strong>
+            <strong>{{ forloop.counter }}. {{ result.question.question_text }}</strong>
             <span class="float-right">{{ result.score }} / {{ result.grade }} points</span>
         </div>
         <div class="card-body">
@@ -42,7 +42,7 @@
             <ul class="mb-0">
                 {% for choice in result.choices %}
                 <li>
-                    {{ choice.content }}
+                    {{ choice.choice_text }}
                     {% if choice in result.selected_choices %}<strong>(your answer)</strong>{% endif %}
                     {% if choice.is_correct %}<span class="text-success">(correct answer)</span>{% endif %}
                 </li>
