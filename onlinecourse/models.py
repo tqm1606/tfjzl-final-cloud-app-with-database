@@ -11,12 +11,8 @@ from django.conf import settings
 import uuid
 
 
-# Instructor model
 class Instructor(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     full_time = models.BooleanField(default=True)
     total_learners = models.IntegerField()
 
@@ -24,12 +20,7 @@ class Instructor(models.Model):
         return self.user.username
 
 
-# Learner model
 class Learner(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
     STUDENT = 'student'
     DEVELOPER = 'developer'
     DATA_SCIENTIST = 'data_scientist'
@@ -40,11 +31,9 @@ class Learner(models.Model):
         (DATA_SCIENTIST, 'Data Scientist'),
         (DATABASE_ADMIN, 'Database Admin')
     ]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     occupation = models.CharField(
-        null=False,
-        max_length=20,
-        choices=OCCUPATION_CHOICES,
-        default=STUDENT
+        null=False, max_length=20, choices=OCCUPATION_CHOICES, default=STUDENT
     )
     social_link = models.URLField(max_length=200)
 
@@ -52,7 +41,6 @@ class Learner(models.Model):
         return self.user.username + "," + self.occupation
 
 
-# Course model
 class Course(models.Model):
     name = models.CharField(null=False, max_length=30, default='online course')
     image = models.ImageField(upload_to='course_images/')
@@ -67,7 +55,6 @@ class Course(models.Model):
         return "Name: " + self.name + "," + "Description: " + self.description
 
 
-# Lesson model
 class Lesson(models.Model):
     title = models.CharField(max_length=200, default="title")
     order = models.IntegerField(default=0)
@@ -78,7 +65,6 @@ class Lesson(models.Model):
         return self.title
 
 
-# Enrollment model
 class Enrollment(models.Model):
     AUDIT = 'audit'
     HONOR = 'honor'
@@ -96,8 +82,10 @@ class Enrollment(models.Model):
 
 
 class Question(models.Model):
-    """An assessment question attached to a course lesson."""
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    """An assessment question belonging to a course."""
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, null=True, blank=True
+    )
     content = models.CharField(max_length=2000)
     grade = models.PositiveIntegerField(default=1)
 
@@ -113,7 +101,6 @@ class Question(models.Model):
                 selected_ids.add(int(choice_id))
             except (TypeError, ValueError):
                 continue
-
         correct_ids = set(
             self.choice_set.filter(is_correct=True).values_list("pk", flat=True)
         )
