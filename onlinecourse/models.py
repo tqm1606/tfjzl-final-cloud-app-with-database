@@ -86,11 +86,11 @@ class Question(models.Model):
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, null=True, blank=True
     )
-    content = models.CharField(max_length=2000)
+    question_text = models.CharField(max_length=2000)
     grade = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return self.content
+        return self.question_text
 
     def is_get_score(self, selected_choices):
         """Return True only when the complete correct answer set is selected."""
@@ -110,11 +110,11 @@ class Question(models.Model):
 class Choice(models.Model):
     """A possible answer for a question."""
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    content = models.CharField(max_length=1000)
+    choice_text = models.CharField(max_length=1000)
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.content
+        return self.choice_text
 
 
 class Submission(models.Model):
