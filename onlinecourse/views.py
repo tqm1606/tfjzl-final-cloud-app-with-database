@@ -175,4 +175,5 @@ def show_exam_result(request, course_id, submission_id):
         'grade': grade,
         'passed': bool(total) and grade >= 70,
         'correct_count': sum(result['is_correct'] for result in results),
+        'selected_ids': list(selected_ids),
     })
