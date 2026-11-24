@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>{{ course.name }}</title>
+</head>
+<body>
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
+        {% if user.is_authenticated %}
+        <span>{{ user.first_name }} ({{ user.username }})</span>
+        <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
+        {% else %}
+        <a class="btn btn-primary" href="{% url 'onlinecourse:login' %}">Login</a>
+        {% endif %}
+    </div>
+</nav>
+<main class="container py-4">
+    <h1 class="mb-3">{{ course.name }}</h1>
+    <p class="lead">{{ course.description }}</p>
+
+    <section aria-labelledby="lessons-heading">
+        <h2 id="lessons-heading" class="h3">Course lessons</h2>
+        {% for lesson in course.lesson_set.all %}
+        <article class="card mb-3">
+            <div class="card-header">
+                <h3 class="h5 mb-0">Lesson {{ lesson.order|add:1 }}: {{ lesson.title }}</h3>
+            </div>
+            <div class="card-body"><p>{{ lesson.content }}</p></div>
+        </article>
+        {% empty %}
+        <p>No lessons are available for this course yet.</p>
+        {% endfor %}
+    </section>
+
+    <section aria-labelledby="assessment-heading" class="mt-5">
+        <h2 id="assessment-heading" class="h3">Course assessment</h2>
+        <form method="post" action="{% url 'onlinecourse:submit' course.id %}">
+            {% csrf_token %}
+            {% for question in course.question_set.all %}
+            <fieldset class="card card-body mb-3">
+                <legend class="h5">{{ question.content }} <small class="text-muted">({{ question.grade }} point{{ question.grade|pluralize }})</small></legend>
+                {% for choice in question.choice_set.all %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="choice_{{ question.id }}" id="choice-{{ choice.id }}" value="{{ choice.id }}">
+                    <label class="form-check-label" for="choice-{{ choice.id }}">{{ choice.content }}</label>
+                </div>
+                {% endfor %}
+            </fieldset>
+            {% empty %}
+            <p>No assessment questions have been added yet.</p>
+            {% endfor %}
+            {% if user.is_authenticated %}
+            <button class="btn btn-primary btn-lg" type="submit">Submit exam</button>
+            {% else %}
+            <p class="text-muted">Log in to submit your assessment.</p>
+            {% endif %}
+        </form>
+    </section>
+</main>
+</body>
+</html>
