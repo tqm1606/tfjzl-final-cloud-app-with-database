@@ -17,6 +17,7 @@ class ChoiceInline(admin.TabularInline):
 
 class QuestionInline(admin.StackedInline):
     model = Question
+    fk_name = 'course'
     extra = 1
 
 
@@ -26,7 +27,7 @@ class LessonInline(admin.StackedInline):
 
 
 class CourseAdmin(admin.ModelAdmin):
-    inlines = [LessonInline]
+    inlines = [LessonInline, QuestionInline]
     list_display = ('name', 'pub_date')
     list_filter = ['pub_date']
     search_fields = ['name', 'description']
@@ -34,13 +35,12 @@ class CourseAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
-    list_display = ('content', 'lesson', 'grade')
-    list_filter = ['lesson__course']
+    list_display = ('content', 'course', 'grade')
+    list_filter = ['course']
     search_fields = ['content']
 
 
 class LessonAdmin(admin.ModelAdmin):
-    inlines = [QuestionInline]
     list_display = ['title', 'course', 'order']
     list_filter = ['course']
     search_fields = ['title']
