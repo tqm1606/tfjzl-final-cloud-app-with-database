@@ -113,8 +113,8 @@ def submit(request, course_id):
         defaults={'mode': Enrollment.HONOR}
     )
     questions = Question.objects.filter(
-        lesson__course=course
-    ).prefetch_related('choice_set').order_by('lesson__order', 'pk')
+        course=course
+    ).prefetch_related('choice_set').order_by('pk')
 
     valid_choices = Choice.objects.filter(
         question__in=questions,
@@ -141,8 +141,8 @@ def show_exam_result(request, course_id, submission_id):
         enrollment__user=request.user
     )
     questions = Question.objects.filter(
-        lesson__course=course
-    ).prefetch_related('choice_set').order_by('lesson__order', 'pk')
+        course=course
+    ).prefetch_related('choice_set').order_by('pk')
 
     selected_ids = set(submission.choices.values_list('pk', flat=True))
     results = []
